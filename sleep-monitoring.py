@@ -123,6 +123,12 @@ def main():
                     f.write('{}, '.format(button.pressed))
                     button.reset_pressed()
                 f.write('\n'.format())
+                led.on()
+                time.sleep(.2)
+                led.off()
+                led.on()
+                time.sleep(.2)
+                led.off()
                 break
             else:
                 time.sleep(.5)

@@ -95,6 +95,8 @@ def main():
 
     print('Starting monitoring...')
     led.on()
+    time.sleep(1)
+    led.off()
 
     while True:
         start = time.time()
@@ -127,7 +129,7 @@ def main():
 
 
 def create_file():
-    filename = datetime.datetime.now().strftime("%Y-%m-%d_%Hh%M")
+    filename = datetime.datetime.now().strftime("%Y-%m-%d_%H%M_monitoring.csv")
     f = open(filename, 'w')
     f.write('time, ')
     if use_loudness_sensor:

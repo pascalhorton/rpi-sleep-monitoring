@@ -8,9 +8,9 @@ from grove.factory import Factory
 from grove.gpio import GPIO
 
 slot_loudness_sensor = 0
-slot_proximity_sensor = 0
-slot_button = 2
-slot_led = 0
+slot_proximity_sensor = 2
+slot_button = 22
+slot_led = 24
 use_loudness_sensor = True
 use_proximity_sensor = True
 use_button = True

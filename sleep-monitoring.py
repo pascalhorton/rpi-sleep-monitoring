@@ -95,7 +95,7 @@ def main():
 
     print('Starting monitoring...')
     led.on()
-    time.sleep(1)
+    time.sleep(3)
     led.off()
 
     while True:

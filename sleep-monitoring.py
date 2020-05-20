@@ -84,6 +84,20 @@ class GroveLed(GPIO):
     def off(self):
         self.write(0)
 
+    def long_flash(self):
+        self.on()
+        time.sleep(3)
+        self.off()
+
+    def double_flash(self):
+        self.on()
+        time.sleep(.2)
+        self.off()
+        time.sleep(.2)
+        self.on()
+        time.sleep(.2)
+        self.off()
+
 
 def main():
     f = create_file()
@@ -94,9 +108,7 @@ def main():
     led = GroveLed(slot_led)
 
     print('Starting monitoring...')
-    led.on()
-    time.sleep(3)
-    led.off()
+    led.long_flash()
 
     while True:
         start = time.time()
@@ -115,7 +127,7 @@ def main():
             if end - start >= 60:
                 f.write(datetime.datetime.now().isoformat())
                 if use_loudness_sensor:
-                    f.write('{}, {}, '.format(loudness_sum/loudness_count, loudness_max))
+                    f.write('{}, {}, '.format(loudness_sum / max(loudness_count, 1), loudness_max))
                 if use_proximity_sensor:
                     f.write('{}, '.format(proximity_sensor.counter))
                     proximity_sensor.reset_counter()
@@ -123,12 +135,7 @@ def main():
                     f.write('{}, '.format(button.pressed))
                     button.reset_pressed()
                 f.write('\n'.format())
-                led.on()
-                time.sleep(.2)
-                led.off()
-                led.on()
-                time.sleep(.2)
-                led.off()
+                led.double_flash()
                 break
             else:
                 time.sleep(.5)

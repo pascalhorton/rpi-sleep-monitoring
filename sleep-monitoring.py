@@ -6,19 +6,55 @@ from grove.adc import ADC
 from grove.button import Button
 from grove.factory import Factory
 from grove.gpio import GPIO
+import seeed_dht
 
 slot_loudness_sensor = 6
 slot_proximity_sensor = 0
 slot_light_sensor = 2
+slot_temp_humidity_sensor = 22
 slot_button = 22
 slot_led = 24
 
 use_loudness_sensor = True
 use_proximity_sensor = True
 use_light_sensor = True
+use_temp_humidity_sensor = True
 use_button = True
 
 debug = True
+
+
+class GroveTemperatureHumiditySensor:
+
+    def __init__(self, channel):
+        self.__sensor = seeed_dht.DHT("22", 12)
+        self.__humiditySum = 0
+        self.__humidityCount = 0
+        self.__temperatureSum = 0
+        self.__temperatureCount = 0
+
+    @property
+    def humidity(self):
+        humidity, temp = self.__sensor.read()
+        return humidity
+
+    @property
+    def temperature(self):
+        humidity, temp = self.__sensor.read()
+        return temp
+
+    def record_value(self):
+        humidity, temp = self.__sensor.read()
+        self.__humiditySum += humidity
+        self.__humidityCount += 1
+        self.__temperatureSum += temp
+        self.__temperatureCount += 1
+
+    def reset_records(self):
+        self.__humiditySum = 0
+        self.__humidityCount = 0
+        self.__temperatureSum = 0
+        self.__temperatureCount = 0
 
 
 class GroveLoudnessSensor:
@@ -164,6 +200,7 @@ def main():
     loudness_sensor = GroveLoudnessSensor(slot_loudness_sensor)
     proximity_sensor = GroveInfraredProximitySensor(slot_proximity_sensor)
     light_sensor = GroveLightSensor(slot_light_sensor)
+    temp_humidity_sensor = GroveTemperatureHumiditySensor(slot_temp_humidity_sensor)
     button = GroveButton(slot_button)
     led = GroveLed(slot_led)
 
@@ -181,6 +218,8 @@ def main():
                 print('proximity: {}'.format(proximity_sensor.counter))
                 print('button: {}'.format(button.pressed))
                 print('light: {}'.format(light_sensor.light))
+                print('temperature: {}'.format(temp_humidity_sensor.temperature))
+                print('humidity: {}'.format(temp_humidity_sensor.humidity))
 
             end = time.time()
             if end - start >= 60:
@@ -191,6 +230,9 @@ def main():
                 if use_proximity_sensor:
                     f.write('{}, '.format(proximity_sensor.counter))
                     proximity_sensor.reset_counter()
+                if use_temp_humidity_sensor:
+                    f.write('{}, {}, '.format(temp_humidity_sensor.temperature, temp_humidity_sensor.humidity))
+                    temp_humidity_sensor.reset_records()
                 if use_button:
                     f.write('{}, '.format(button.pressed))
                     button.reset_pressed()
@@ -212,6 +254,8 @@ def create_file():
         f.write('loudness_mean, loudness_max, ')
     if use_proximity_sensor:
         f.write('proximity, ')
+    if use_temp_humidity_sensor:
+        f.write('temperature, humidity, ')
     if use_button:
         f.write('button, ')
     if use_light_sensor:

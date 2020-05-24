@@ -7,8 +7,8 @@ from grove.button import Button
 from grove.factory import Factory
 from grove.gpio import GPIO
 
-slot_loudness_sensor = 0
-slot_proximity_sensor = 4
+slot_loudness_sensor = 6
+slot_proximity_sensor = 0
 slot_light_sensor = 2
 slot_button = 22
 slot_led = 24
@@ -19,6 +19,7 @@ use_light_sensor = True
 use_button = True
 
 debug = True
+
 
 class GroveLoudnessSensor:
 

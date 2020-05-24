@@ -74,7 +74,7 @@ def main():
 
 def create_file():
     filename = datetime.datetime.now().strftime("%Y-%m-%d_%H%M_monitoring.csv")
-    f = open(filename, 'w', buffering=0)
+    f = open(filename, 'w', buffering=1)
     f.write('time, ')
     if use_loudness_sensor:
         f.write('loudness_mean, loudness_max, ')

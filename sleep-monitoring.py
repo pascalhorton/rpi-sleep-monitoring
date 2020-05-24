@@ -21,7 +21,7 @@ use_light_sensor = True
 use_temp_humidity_sensor = True
 use_button = True
 
-debug = True
+debug = False
 
 
 class GroveTemperatureHumiditySensor:

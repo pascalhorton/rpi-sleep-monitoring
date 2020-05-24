@@ -28,10 +28,10 @@ class GroveTemperatureHumiditySensor:
 
     def __init__(self, channel):
         self.__sensor = seeed_dht.DHT("22", 12)
-        self.__humiditySum = 0
-        self.__humidityCount = 0
-        self.__temperatureSum = 0
-        self.__temperatureCount = 0
+        self.__humidity_sum = 0
+        self.__humidity_count = 0
+        self.__temperature_sum = 0
+        self.__temperature_count = 0
 
     @property
     def humidity(self):
@@ -43,18 +43,22 @@ class GroveTemperatureHumiditySensor:
         humidity, temp = self.__sensor.read()
         return temp
 
+    @property
+    def temperature_and_humidity(self):
+        return self.__sensor.read()
+
     def record_value(self):
         humidity, temp = self.__sensor.read()
-        self.__humiditySum += humidity
-        self.__humidityCount += 1
-        self.__temperatureSum += temp
-        self.__temperatureCount += 1
+        self.__humidity_sum += humidity
+        self.__humidity_count += 1
+        self.__temperature_sum += temp
+        self.__temperature_count += 1
 
     def reset_records(self):
-        self.__humiditySum = 0
-        self.__humidityCount = 0
-        self.__temperatureSum = 0
-        self.__temperatureCount = 0
+        self.__humidity_sum = 0
+        self.__humidity_count = 0
+        self.__temperature_sum = 0
+        self.__temperature_count = 0
 
 
 class GroveLoudnessSensor:
@@ -218,8 +222,9 @@ def main():
                 print('proximity: {}'.format(proximity_sensor.counter))
                 print('button: {}'.format(button.pressed))
                 print('light: {}'.format(light_sensor.light))
-                print('temperature: {}'.format(temp_humidity_sensor.temperature))
-                print('humidity: {}'.format(temp_humidity_sensor.humidity))
+                temp, humidity = temp_humidity_sensor.temperature_and_humidity
+                print('temperature: {}'.format(temp))
+                print('humidity: {}'.format(humidity))
 
             end = time.time()
             if end - start >= 60:

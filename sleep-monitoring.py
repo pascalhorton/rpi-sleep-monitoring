@@ -12,11 +12,13 @@ slot_proximity_sensor = 4
 slot_light_sensor = 2
 slot_button = 22
 slot_led = 24
+
 use_loudness_sensor = True
 use_proximity_sensor = True
 use_light_sensor = True
 use_button = True
 
+debug = True
 
 class GroveLoudnessSensor:
 
@@ -172,6 +174,12 @@ def main():
 
         while True:
             loudness_sensor.record_value()
+
+            if debug:
+                print('loudness: {}\n'.format(loudness_sensor.value))
+                print('proximity: {}\n'.format(proximity_sensor.counter))
+                print('button: {}\n'.format(button.pressed))
+                print('light: {}\n'.format(light_sensor.light))
 
             end = time.time()
             if end - start >= 60:

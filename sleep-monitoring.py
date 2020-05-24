@@ -175,6 +175,7 @@ def main():
         while True:
             loudness_sensor.record_value()
 
+            debug = True
             if debug:
                 print('loudness: {}\n'.format(loudness_sensor.value))
                 print('proximity: {}\n'.format(proximity_sensor.counter))

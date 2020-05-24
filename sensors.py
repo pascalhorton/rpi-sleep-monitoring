@@ -1,3 +1,4 @@
+import time
 from grove.adc import ADC
 from grove.button import Button
 from grove.factory import Factory

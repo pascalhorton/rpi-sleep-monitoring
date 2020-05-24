@@ -175,12 +175,11 @@ def main():
         while True:
             loudness_sensor.record_value()
 
-            debug = True
             if debug:
-                print('loudness: {}\n'.format(loudness_sensor.value))
-                print('proximity: {}\n'.format(proximity_sensor.counter))
-                print('button: {}\n'.format(button.pressed))
-                print('light: {}\n'.format(light_sensor.light))
+                print('loudness: {}'.format(loudness_sensor.value))
+                print('proximity: {}'.format(proximity_sensor.counter))
+                print('button: {}'.format(button.pressed))
+                print('light: {}'.format(light_sensor.light))
 
             end = time.time()
             if end - start >= 60:

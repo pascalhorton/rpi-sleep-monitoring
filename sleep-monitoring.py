@@ -222,9 +222,9 @@ def main():
                 print('proximity: {}'.format(proximity_sensor.counter))
                 print('button: {}'.format(button.pressed))
                 print('light: {}'.format(light_sensor.light))
-                temp, humidity = temp_humidity_sensor.temperature_and_humidity
+                humid, temp = temp_humidity_sensor.temperature_and_humidity
                 print('temperature: {}'.format(temp))
-                print('humidity: {}'.format(humidity))
+                print('humidity: {}'.format(humid))
 
             end = time.time()
             if end - start >= 60:

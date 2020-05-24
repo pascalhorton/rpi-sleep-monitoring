@@ -248,7 +248,7 @@ def main():
                 led.double_flash()
                 break
             else:
-                time.sleep(.5)
+                time.sleep(1)
 
 
 def create_file():

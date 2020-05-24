@@ -8,23 +8,46 @@ from grove.factory import Factory
 from grove.gpio import GPIO
 
 slot_loudness_sensor = 0
-slot_proximity_sensor = 2
+slot_proximity_sensor = 4
+slot_light_sensor = 2
 slot_button = 22
 slot_led = 24
 use_loudness_sensor = True
 use_proximity_sensor = True
+use_light_sensor = True
 use_button = True
 
 
 class GroveLoudnessSensor:
 
     def __init__(self, channel):
-        self.channel = channel
-        self.adc = ADC()
+        self.__channel = channel
+        self.__adc = ADC()
+        self.__sum = 0
+        self.__count = 0
+        self.__max = 0
 
     @property
     def value(self):
-        return self.adc.read(self.channel)
+        return self.__adc.read(self.__channel)
+
+    @property
+    def max(self):
+        return self.__max
+
+    @property
+    def mean(self):
+        return self.__sum / max(self.__count, 1)
+
+    def record_value(self):
+        self.__sum += self.value
+        self.__count += 1
+        self.__max = max(self.__max, self.value)
+
+    def reset_records(self):
+        self.__sum = 0
+        self.__count = 0
+        self.__max = 0
 
 
 class GroveButton(object):
@@ -32,7 +55,7 @@ class GroveButton(object):
         # High = pressed
         self.__btn = Factory.getButton("GPIO-HIGH", pin)
         self.__last_time = time.time()
-        self.__pressed = False
+        self.__pressed = 0
         self.__btn.on_event(self, GroveButton.__handle_event)
 
     @property
@@ -40,10 +63,10 @@ class GroveButton(object):
         return self.__pressed
 
     def reset_pressed(self):
-        self.__pressed = False
+        self.__pressed = 0
 
     def __on_press(self):
-        self.__pressed = True
+        self.__pressed = 1
 
     def __handle_event(self, evt):
         dt, self.__last_time = evt["time"] - self.__last_time, evt["time"]
@@ -99,11 +122,45 @@ class GroveLed(GPIO):
         self.off()
 
 
+class GroveLightSensor:
+
+    def __init__(self, channel):
+        self.__channel = channel
+        self.__adc = ADC()
+        self.__sum = 0
+        self.__count = 0
+        self.__max = 0
+
+    @property
+    def light(self):
+        value = self.__adc.read(self.__channel)
+        return value
+
+    @property
+    def max(self):
+        return self.__max
+
+    @property
+    def mean(self):
+        return self.__sum / max(self.__count, 1)
+
+    def record_value(self):
+        self.__sum += self.light
+        self.__count += 1
+        self.__max = max(self.__max, self.light)
+
+    def reset_records(self):
+        self.__sum = 0
+        self.__count = 0
+        self.__max = 0
+
+
 def main():
     f = create_file()
 
     loudness_sensor = GroveLoudnessSensor(slot_loudness_sensor)
     proximity_sensor = GroveInfraredProximitySensor(slot_proximity_sensor)
+    light_sensor = GroveLightSensor(slot_light_sensor)
     button = GroveButton(slot_button)
     led = GroveLed(slot_led)
 
@@ -112,28 +169,25 @@ def main():
 
     while True:
         start = time.time()
-        loudness_max = 0
-        loudness_sum = 0
-        loudness_count = 0
 
         while True:
-            loudness_value = loudness_sensor.value
-            if loudness_value > 10:
-                loudness_max = max(loudness_max, loudness_value)
-                loudness_sum += loudness_value
-                loudness_count += 1
+            loudness_sensor.record_value()
 
             end = time.time()
             if end - start >= 60:
                 f.write(datetime.datetime.now().isoformat())
                 if use_loudness_sensor:
-                    f.write('{}, {}, '.format(loudness_sum / max(loudness_count, 1), loudness_max))
+                    f.write('{}, {}, '.format(loudness_sensor.mean, loudness_sensor.max))
+                    loudness_sensor.reset_records()
                 if use_proximity_sensor:
                     f.write('{}, '.format(proximity_sensor.counter))
                     proximity_sensor.reset_counter()
                 if use_button:
                     f.write('{}, '.format(button.pressed))
                     button.reset_pressed()
+                if use_light_sensor:
+                    f.write('{}, {}, '.format(light_sensor.mean, light_sensor.max))
+                    light_sensor.reset_records()
                 f.write('\n'.format())
                 led.double_flash()
                 break
@@ -151,6 +205,8 @@ def create_file():
         f.write('proximity, ')
     if use_button:
         f.write('button, ')
+    if use_light_sensor:
+        f.write('light_mean, light_max, ')
     f.write('\n'.format())
     return f
 

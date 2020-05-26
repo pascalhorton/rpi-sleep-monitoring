@@ -27,6 +27,12 @@ def main():
     loudness_sensor = GroveLoudnessSensor(slot_loudness_sensor)
     proximity_sensor = GroveInfraredProximitySensor(slot_proximity_sensor)
     motion_sensor = PIRMotionSensor(slot_motion_sensor)
+
+    def callback():
+        print('Motion detected.')
+
+    motion_sensor.on_detect = callback
+
     light_sensor = GroveLightSensor(slot_light_sensor)
     temp_humidity_sensor = GroveTemperatureHumiditySensor(slot_temp_humidity_sensor)
     button = GroveButton(slot_button)

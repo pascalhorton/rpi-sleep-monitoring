@@ -109,17 +109,27 @@ class PIRMotionSensor(GPIO):
     def counter(self):
         return self.__counter
 
-    def on_detect(self):
-        if self.on_event is None:
-            self.on_event = self.__handle_event
-        self.__counter += 1
-
     def reset_counter(self):
         self.__counter = 0
 
-    def __handle_event(self, pin, value):
+    @property
+    def on_detect(self):
+        return self._on_detect
+
+    @on_detect.setter
+    def on_detect(self, callback):
+        if not callable(callback):
+            return
+
+        if self.on_event is None:
+            self.on_event = self._handle_event
+
+        self._on_detect = callback
+
+    def _handle_event(self, pin, value):
         if value:
-            self.on_detect()
+            if callable(self._on_detect):
+                self._on_detect()
 
 
 class GroveInfraredProximitySensor(GPIO):

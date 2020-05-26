@@ -104,13 +104,13 @@ class PIRMotionSensor(GPIO):
     def __init__(self, pin):
         super(PIRMotionSensor, self).__init__(pin, GPIO.IN)
         self.__counter = 0
-        GPIO.add_event_detect(pin, GPIO.RISING, callback=self.on_detect)
+        self.on_event(self.increment_counter)
 
     @property
     def counter(self):
         return self.__counter
 
-    def on_detect(self):
+    def increment_counter(self):
         self.__counter += 1
 
     def reset_counter(self):

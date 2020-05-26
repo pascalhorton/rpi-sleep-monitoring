@@ -5,7 +5,7 @@ from sensors import *
 
 slot_loudness_sensor = 6
 slot_proximity_sensor = 5
-slot_motion_sensor = 5
+slot_motion_sensor = 23
 slot_light_sensor = 2
 slot_temp_humidity_sensor = 22
 slot_button = 22
@@ -26,6 +26,7 @@ def main():
 
     loudness_sensor = GroveLoudnessSensor(slot_loudness_sensor)
     proximity_sensor = GroveInfraredProximitySensor(slot_proximity_sensor)
+    motion_sensor = PIRMotionSensor(slot_motion_sensor)
     light_sensor = GroveLightSensor(slot_light_sensor)
     temp_humidity_sensor = GroveTemperatureHumiditySensor(slot_temp_humidity_sensor)
     button = GroveButton(slot_button)
@@ -43,7 +44,7 @@ def main():
             if debug:
                 print('loudness: {}'.format(loudness_sensor.value))
                 print('proximity: {}'.format(proximity_sensor.counter))
-                print('motion: {}'.format(0))
+                print('motion: {}'.format(motion_sensor.counter))
                 print('button: {}'.format(button.pressed))
                 print('light: {}'.format(light_sensor.light))
                 humid, temp = temp_humidity_sensor.temperature_and_humidity
@@ -60,7 +61,8 @@ def main():
                     f.write('{}, '.format(proximity_sensor.counter))
                     proximity_sensor.reset_counter()
                 if use_motion_sensor:
-                    f.write('{}, '.format(0))
+                    f.write('{}, '.format(motion_sensor.counter))
+                    motion_sensor.reset_counter()
                 if use_temp_humidity_sensor:
                     f.write('{}, {}, '.format(temp_humidity_sensor.temperature, temp_humidity_sensor.humidity))
                     temp_humidity_sensor.reset_records()

@@ -5,6 +5,8 @@ from grove.factory import Factory
 from grove.gpio import GPIO
 import seeed_dht
 
+GPIO.setmode(GPIO.BCM)
+
 
 class GroveTemperatureHumiditySensor:
 
@@ -100,6 +102,23 @@ class GroveButton(object):
                 self.__on_press()
 
 
+class PIRMotionSensor(GPIO):
+    def __init__(self, pin):
+        super(PIRMotionSensor, self).__init__(pin, GPIO.IN)
+        self.__counter = 0
+        GPIO.add_event_detect(pin, GPIO.RISING, callback=self.on_detect)
+
+    @property
+    def counter(self):
+        return self.__counter
+
+    def on_detect(self):
+        self.__counter += 1
+
+    def reset_counter(self):
+        self.__counter = 0
+
+
 class GroveInfraredProximitySensor(GPIO):
     def __init__(self, pin):
         super(GroveInfraredProximitySensor, self).__init__(pin, GPIO.IN)
@@ -148,7 +167,6 @@ class GroveLed(GPIO):
 
 
 class GroveLightSensor:
-
     def __init__(self, channel):
         self.__channel = channel
         self.__adc = ADC()

@@ -5,8 +5,6 @@ from grove.factory import Factory
 from grove.gpio import GPIO
 import seeed_dht
 
-GPIO.setmode(GPIO.BCM)
-
 
 class GroveTemperatureHumiditySensor:
 

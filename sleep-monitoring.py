@@ -37,9 +37,16 @@ def main():
 
     while True:
         start = time.time()
+        counter = 0
 
         while True:
+            counter += 1
             loudness_sensor.record_value()
+            light_sensor.record_value()
+
+            # Measure temperature and humidity every 10 seconds
+            if counter % 10 == 0:
+                temp_humidity_sensor.record_value()
 
             if debug:
                 print('loudness: {}'.format(loudness_sensor.value))
@@ -47,9 +54,10 @@ def main():
                 print('motion: {}'.format(motion_sensor.counter))
                 print('button: {}'.format(button.pressed))
                 print('light: {}'.format(light_sensor.light))
-                humid, temp = temp_humidity_sensor.temperature_and_humidity
-                print('temperature: {}'.format(temp))
-                print('humidity: {}'.format(humid))
+                if counter % 10 == 0:
+                    humid, temp = temp_humidity_sensor.temperature_and_humidity
+                    print('temperature: {}'.format(temp))
+                    print('humidity: {}'.format(humid))
 
             end = time.time()
             if end - start >= 60:
@@ -66,12 +74,12 @@ def main():
                 if use_temp_humidity_sensor:
                     f.write('{}, {}, '.format(temp_humidity_sensor.temperature, temp_humidity_sensor.humidity))
                     temp_humidity_sensor.reset_records()
-                if use_button:
-                    f.write('{}, '.format(button.pressed))
-                    button.reset_pressed()
                 if use_light_sensor:
                     f.write('{}, {}, '.format(light_sensor.mean, light_sensor.max))
                     light_sensor.reset_records()
+                if use_button:
+                    f.write('{}, '.format(button.pressed))
+                    button.reset_pressed()
                 f.write('\n'.format())
                 led.double_flash()
                 break
@@ -91,10 +99,10 @@ def create_file():
         f.write('motion, ')
     if use_temp_humidity_sensor:
         f.write('temperature, humidity, ')
-    if use_button:
-        f.write('button, ')
     if use_light_sensor:
         f.write('light_mean, light_max, ')
+    if use_button:
+        f.write('button, ')
     f.write('\n'.format())
     return f
 

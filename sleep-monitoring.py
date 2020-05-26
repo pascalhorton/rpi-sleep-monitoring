@@ -12,13 +12,13 @@ slot_button = 22
 slot_led = 24
 
 use_loudness_sensor = True
-use_proximity_sensor = True
+use_proximity_sensor = False
 use_motion_sensor = True
 use_light_sensor = True
 use_temp_humidity_sensor = True
 use_button = True
 
-debug = True
+debug = False
 
 
 def main():

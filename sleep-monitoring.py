@@ -4,7 +4,7 @@ from sensors import *
 
 
 slot_loudness_sensor = 6
-slot_proximity_sensor = 0
+slot_proximity_sensor = 5
 slot_motion_sensor = 23
 slot_light_sensor = 2
 slot_temp_humidity_sensor = 22

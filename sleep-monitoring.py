@@ -4,7 +4,8 @@ from sensors import *
 
 
 slot_loudness_sensor = 6
-slot_proximity_sensor = 0
+slot_proximity_sensor = 5
+slot_motion_sensor = 5
 slot_light_sensor = 2
 slot_temp_humidity_sensor = 22
 slot_button = 22
@@ -12,11 +13,12 @@ slot_led = 24
 
 use_loudness_sensor = True
 use_proximity_sensor = True
+use_motion_sensor = True
 use_light_sensor = True
 use_temp_humidity_sensor = True
 use_button = True
 
-debug = False
+debug = True
 
 
 def main():
@@ -41,6 +43,7 @@ def main():
             if debug:
                 print('loudness: {}'.format(loudness_sensor.value))
                 print('proximity: {}'.format(proximity_sensor.counter))
+                print('motion: {}'.format(0))
                 print('button: {}'.format(button.pressed))
                 print('light: {}'.format(light_sensor.light))
                 humid, temp = temp_humidity_sensor.temperature_and_humidity
@@ -56,6 +59,8 @@ def main():
                 if use_proximity_sensor:
                     f.write('{}, '.format(proximity_sensor.counter))
                     proximity_sensor.reset_counter()
+                if use_motion_sensor:
+                    f.write('{}, '.format(0))
                 if use_temp_humidity_sensor:
                     f.write('{}, {}, '.format(temp_humidity_sensor.temperature, temp_humidity_sensor.humidity))
                     temp_humidity_sensor.reset_records()
@@ -80,6 +85,8 @@ def create_file():
         f.write('loudness_mean, loudness_max, ')
     if use_proximity_sensor:
         f.write('proximity, ')
+    if use_motion_sensor:
+        f.write('motion, ')
     if use_temp_humidity_sensor:
         f.write('temperature, humidity, ')
     if use_button:

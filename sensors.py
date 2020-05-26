@@ -116,7 +116,7 @@ class PIRMotionSensor(GPIO):
 
     def increment_counter(self):
         self.__counter += 1
-        print('---- Motion detected.')
+        print('-- Motion detected --')
 
     @property
     def on_detect(self):
@@ -132,22 +132,28 @@ class GroveInfraredProximitySensor(GPIO):
     def __init__(self, pin):
         super(GroveInfraredProximitySensor, self).__init__(pin, GPIO.IN)
         self.__counter = 0
+        self._on_detect = self.increment_counter
+        self.on_event = self._handle_event
 
     @property
     def counter(self):
         return self.__counter
 
-    def on_detect(self):
-        if self.on_event is None:
-            self.on_event = self.__handle_event
-        self.__counter += 1
-
     def reset_counter(self):
         self.__counter = 0
 
-    def __handle_event(self, pin, value):
+    def increment_counter(self):
+        self.__counter += 1
+        print('-- Proximity detected --')
+
+    @property
+    def on_detect(self):
+        return self._on_detect
+
+    def _handle_event(self, pin, value):
         if value:
-            self.on_detect()
+            if callable(self._on_detect):
+                self._on_detect()
 
 
 class GroveLed(GPIO):

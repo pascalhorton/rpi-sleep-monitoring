@@ -63,14 +63,16 @@ def main():
                 print('light: {}'.format(light_sensor.light))
                 if counter % 20 == 0:
                     humid, temp = temp_humidity_sensor.temperature_and_humidity
-                    print('temperature: {}'.format(temp))
-                    print('humidity: {}'.format(humid))
+                    print('temperature: {:.1f}'.format(temp))
+                    print('humidity: {:.1f}'.format(humid))
 
             end = time.time()
             if end - start >= 60:
-                f.write('{}, '.format(datetime.datetime.now().isoformat()))
+                dt = datetime.datetime.now()
+                dt = dt.replace(microsecond=0)
+                f.write('{}, '.format(dt.isoformat()))
                 if use_loudness_sensor:
-                    f.write('{}, {}, '.format(loudness_sensor.mean, loudness_sensor.max))
+                    f.write('{:.1f}, {}, '.format(loudness_sensor.mean, loudness_sensor.max))
                     loudness_sensor.reset_records()
                 if use_proximity_sensor:
                     f.write('{}, '.format(proximity_sensor.counter))
@@ -79,10 +81,10 @@ def main():
                     f.write('{}, '.format(motion_sensor.counter))
                     motion_sensor.reset_counter()
                 if use_temp_humidity_sensor:
-                    f.write('{}, {}, '.format(temp_humidity_sensor.temperature, temp_humidity_sensor.humidity))
+                    f.write('{:.1f}, {:.1f}, '.format(temp_humidity_sensor.temperature, temp_humidity_sensor.humidity))
                     temp_humidity_sensor.reset_records()
                 if use_light_sensor:
-                    f.write('{}, {}, '.format(light_sensor.mean, light_sensor.max))
+                    f.write('{:.1f}, {}, '.format(light_sensor.mean, light_sensor.max))
                     light_sensor.reset_records()
                 if use_button:
                     f.write('{}, '.format(button.pressed))

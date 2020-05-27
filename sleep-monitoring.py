@@ -1,5 +1,8 @@
 import time
+import sys
+import os
 import datetime
+from pathlib import Path
 from sensors import *
 
 
@@ -22,7 +25,11 @@ debug = False
 
 
 def main():
-    f = create_file()
+    if len(sys.argv) < 2:
+        print('Usage: {} output_path'.format(sys.argv[0]))
+        sys.exit(1)
+
+    f = create_file(sys.argv[1])
 
     loudness_sensor = GroveLoudnessSensor(slot_loudness_sensor)
     proximity_sensor = GroveInfraredProximitySensor(slot_proximity_sensor)
@@ -44,8 +51,8 @@ def main():
             loudness_sensor.record_value()
             light_sensor.record_value()
 
-            # Measure temperature and humidity every 10 seconds
-            if counter % 10 == 0:
+            # Measure temperature and humidity every 20 seconds
+            if counter % 20 == 0:
                 temp_humidity_sensor.record_value()
 
             if debug:
@@ -54,7 +61,7 @@ def main():
                 print('motion: {}'.format(motion_sensor.counter))
                 print('button: {}'.format(button.pressed))
                 print('light: {}'.format(light_sensor.light))
-                if counter % 10 == 0:
+                if counter % 20 == 0:
                     humid, temp = temp_humidity_sensor.temperature_and_humidity
                     print('temperature: {}'.format(temp))
                     print('humidity: {}'.format(humid))
@@ -87,9 +94,10 @@ def main():
                 time.sleep(1)
 
 
-def create_file():
+def create_file(dir_path):
+    Path(dir_path).mkdir(parents=True, exist_ok=True)
     filename = datetime.datetime.now().strftime("%Y-%m-%d_%H%M_monitoring.csv")
-    f = open(filename, 'w', buffering=1)
+    f = open(os.path.join(dir_path, filename), 'w', buffering=1)
     f.write('time, ')
     if use_loudness_sensor:
         f.write('loudness_mean, loudness_max, ')

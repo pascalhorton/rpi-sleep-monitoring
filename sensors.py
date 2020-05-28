@@ -171,13 +171,18 @@ class GroveLed(GPIO):
         time.sleep(3)
         self.off()
 
+    def flash(self):
+        self.on()
+        time.sleep(.1)
+        self.off()
+
     def double_flash(self):
         self.on()
-        time.sleep(.2)
+        time.sleep(.1)
         self.off()
-        time.sleep(.2)
+        time.sleep(.1)
         self.on()
-        time.sleep(.2)
+        time.sleep(.1)
         self.off()
 
 

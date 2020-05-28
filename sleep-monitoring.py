@@ -90,7 +90,7 @@ def main():
                     f.write('{}, '.format(button.pressed))
                     button.reset_pressed()
                 f.write('\n'.format())
-                led.double_flash()
+                led.flash()
                 break
             else:
                 time.sleep(1)

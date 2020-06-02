@@ -20,12 +20,20 @@ def main():
     csv_files = glob.glob("{}/*.csv".format(input_dir))
     csv_files.sort(reverse=True)
     if len(csv_files) > nb_files:
-        del csv_files[0:-nb_files]
+        del csv_files[nb_files:]
 
     for file in csv_files:
-        if not plot_already_updated(file):
+        if not plot_already_updated(file, plot_dir):
             create_plot(file, plot_dir)
             shutil.copyfile(file, '{}/{}/{}'.format(plot_dir, 'csv_files', os.path.basename(file)))
+
+
+def plot_already_updated(file, plot_dir):
+    csv_file_copied = plot_dir + '/csv_files/' + os.path.basename(file)
+    if os.path.exists(csv_file_copied):
+        if os.path.getmtime(file) < os.path.getmtime(csv_file_copied):
+            return True
+    return False
 
 
 if __name__ == '__main__':

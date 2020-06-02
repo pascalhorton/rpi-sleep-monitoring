@@ -17,9 +17,8 @@ def main():
 
 
 def create_plot(input_file, plot_dir):
-    print('Reading file {}'.format(input_file))
-    dat = pd.read_csv(input_file, dtype=float, skipinitialspace=True, parse_dates=[0], infer_datetime_format=True)
-    date = dat['time']
+    dat = read_data(input_file)
+    date = extract_date(dat)
 
     smooth_data(dat)
     interpret_sleep(dat)
@@ -28,9 +27,7 @@ def create_plot(input_file, plot_dir):
     fig, axes = plt.subplots(nrows=4, figsize=(8, 10))
 
     ax = axes[0]
-    title = '{}  -  {}'.format(date[0].strftime('%d.%m.%Y  %H:%M'),
-                               date[len(date) - 1].strftime('%d.%m.%Y  %H:%M'))
-    ax.set_title(title)
+    create_title(ax, date)
     plot_sleep(ax, sleep_end, sleep_start)
     ax.plot(date, dat['temperature'], color='firebrick')
     ax.set_ylabel('Temperature [°C]', color='firebrick')
@@ -74,10 +71,38 @@ def create_plot(input_file, plot_dir):
 
     plt.tight_layout()
 
-    filename = date[0].strftime('%Y-%m-%d_%H%M') + '.png'
+    save_figure(date, plot_dir)
+    plt.close(fig)
+
+
+def save_figure(date, plot_dir):
+    filename = date[0].strftime('%Y-%m-%d_%H%M') + '_monitoring.png'
     fig_path = os.path.join(plot_dir, filename)
     print('Writing file to {}'.format(fig_path))
     plt.savefig(fig_path, dpi=150)
+
+
+def create_title(ax, date):
+    title = '{}  -  {}'.format(date[0].strftime('%d.%m.%Y  %H:%M'),
+                               date[len(date) - 1].strftime('%d.%m.%Y  %H:%M'))
+    ax.set_title(title)
+
+
+def extract_date(dat):
+    date = dat['time']
+    return date
+
+
+def read_data(input_file):
+    print('Reading file {}'.format(input_file))
+    dat = pd.read_csv(input_file, dtype=float, skipinitialspace=True, parse_dates=[0],
+                      infer_datetime_format=True, error_bad_lines=True)
+    drop_last_line(dat)
+    return dat
+
+
+def drop_last_line(dat):
+    dat.drop(dat.tail(1).index, inplace=True)
 
 
 def plot_sleep(ax, sleep_end, sleep_start):
@@ -88,11 +113,11 @@ def plot_sleep(ax, sleep_end, sleep_start):
 def format_time_axis(axis):
     hours = mdates.HourLocator()
     minutes = mdates.MinuteLocator([15, 30, 45])
-    hours_fmt = mdates.DateFormatter('%H:%M')
+    hours_fmt = mdates.DateFormatter('%H')
     axis.xaxis.set_major_locator(hours)
     axis.xaxis.set_major_formatter(hours_fmt)
     axis.xaxis.set_minor_locator(minutes)
-    axis.format_xdata = mdates.DateFormatter('%H:%M')
+    axis.format_xdata = mdates.DateFormatter('%H')
 
 
 def interpret_sleep(data):

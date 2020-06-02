@@ -11,11 +11,14 @@ threshold_motion = 2
 
 def main():
     if len(sys.argv) < 3:
-        print('Usage: {} input_file_path plot_dir_path'.format(sys.argv[0]))
+        print('Usage: {} input_file plot_dir'.format(sys.argv[0]))
         sys.exit(1)
+    create_plot(sys.argv[1], sys.argv[2])
 
-    print('Reading file {}'.format(sys.argv[1]))
-    dat = pd.read_csv(sys.argv[1], dtype=float, skipinitialspace=True, parse_dates=[0], infer_datetime_format=True)
+
+def create_plot(input_file, plot_dir):
+    print('Reading file {}'.format(input_file))
+    dat = pd.read_csv(input_file, dtype=float, skipinitialspace=True, parse_dates=[0], infer_datetime_format=True)
     date = dat['time']
 
     smooth_data(dat)
@@ -72,7 +75,7 @@ def main():
     plt.tight_layout()
 
     filename = date[0].strftime('%Y-%m-%d_%H%M') + '.png'
-    fig_path = os.path.join(sys.argv[2], filename)
+    fig_path = os.path.join(plot_dir, filename)
     print('Writing file to {}'.format(fig_path))
     plt.savefig(fig_path, dpi=150)
 

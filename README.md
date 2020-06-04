@@ -73,5 +73,9 @@ Set the creation of the (10 last) plots every 5 minutes:
 
 * Mount (/etc/fstab) a directory from a server (e.g. NAS) in /home/pi/monitoring-plots 
 ```
-[IP address]:/path/to/shared/folder/on/NAS /home/pi/monitoring-plots/  nfs  nofail,x-systemd.automount,x-systemd.requires=network-online.target,x-systemd.device-timeout=10  0  0
+[IP address]:/path/to/shared/folder/on/NAS /home/pi/monitoring-plots/  nfs  nofail,user,x-systemd.automount,x-systemd.requires=network-online.target,x-systemd.device-timeout=10  0  0
+```
+* If not mounting the share automatically, add the following to ~/.bashrc (end):
+```
+mount /home/pi/monitoring-plots/
 ```

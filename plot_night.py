@@ -19,9 +19,10 @@ def main():
 def create_plot(input_file, plot_dir):
     dat = read_data(input_file)
 
+    print('Number of rows: {}'.format(dat.shape[0]))
     if dat.shape[0] < 60:
         return
-    
+
     date = extract_date(dat)
 
     smooth_data(dat)

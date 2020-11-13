@@ -6,6 +6,7 @@ from pathlib import Path
 from sensors import *
 
 
+# Define sensor slots
 slot_loudness_sensor = 6
 slot_proximity_sensor = 5
 slot_motion_sensor = 23
@@ -14,6 +15,7 @@ slot_temp_humidity_sensor = 22
 slot_button = 22
 slot_led = 24
 
+# Select sensors to enable
 use_loudness_sensor = True
 use_proximity_sensor = False
 use_motion_sensor = True
@@ -21,10 +23,12 @@ use_light_sensor = True
 use_temp_humidity_sensor = True
 use_button = True
 
+# Debug mode
 debug = False
 
 
 def main():
+    # Check arguments provided
     if len(sys.argv) < 2:
         print('Usage: {} output_path'.format(sys.argv[0]))
         sys.exit(1)
@@ -40,18 +44,22 @@ def main():
     led = GroveLed(slot_led)
 
     print('Starting monitoring...')
+    
+    # Flash the LED to signal that the monitoring is starting
     led.long_flash()
 
+    # Monitor continuously
     while True:
         start = time.time()
         counter = 0
 
+        # Loop for measuring and writing data to file
         while True:
             counter += 1
             loudness_sensor.record_value()
             light_sensor.record_value()
 
-            # Measure temperature and humidity every 20 seconds
+            # Measure temperature and humidity every 20 iterations (~seconds)
             if counter % 20 == 0:
                 temp_humidity_sensor.record_value()
 
@@ -67,6 +75,8 @@ def main():
                     print('humidity: {:.1f}'.format(humid))
 
             end = time.time()
+            
+            # Write the measured values to the file every minute and reset sensors
             if end - start >= 60:
                 dt = datetime.datetime.now()
                 dt = dt.replace(microsecond=0)
@@ -93,6 +103,7 @@ def main():
                 led.flash()
                 break
             else:
+                # Sleep 1 sec
                 time.sleep(1)
 
 
